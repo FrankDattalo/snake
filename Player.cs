@@ -12,7 +12,7 @@ public partial class Player : Node2D
 	public override void _Process(double delta)
 	{
 		Vector2 dir = Vector2.Zero;
-		System.Console.WriteLine("This is new");
+		Console.WriteLine("This is new");
 		if (Input.IsActionPressed("UP")) {
 			dir = Vector2.Up;
 		} else if (Input.IsActionPressed("DOWN")) {

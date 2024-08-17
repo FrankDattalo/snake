@@ -1,27 +1,78 @@
 using Godot;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
-public partial class Player : Node2D
-{	
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
+public partial class Player : Node2D {	
+
+	[Export]
+	public PackedScene CellScene { get; set; }
+
+	[Export]
+	public int StartingSegmentCount { get; set; } = 100;
+
+	private Vector2I direction = Vector2I.Zero;
+
+	private readonly List<Cell> segments = new List<Cell>();
+
+	public override void _Ready() {
+		Random random = Random.Shared;
+		// Color[] colors = new Color[] { Utils.Colors.YELLOW, Utils.Colors.BLUE, Utils.Colors.GREEN, Utils.Colors.RED, };
+
+		for (int i = 0; i < this.StartingSegmentCount; i++) {
+			Cell cell = CellScene.Instantiate<Cell>();
+			cell.SetPosition(new Vector2I(-i, 0));
+			Color color = new Color(random.Next(256), random.Next(256), random.Next(256));
+			cell.SetColor(color);
+			segments.Add(cell);
+			// ensure godot tracks it
+			this.AddChild(cell);
+		}
+
+		this.direction = Vector2I.Right;
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		Vector2 dir = Vector2.Zero;
-		Console.WriteLine("This is new");
-		if (Input.IsActionPressed("UP")) {
-			dir = Vector2.Up;
-		} else if (Input.IsActionPressed("DOWN")) {
-			dir = Vector2.Down;
-		} else if (Input.IsActionPressed("LEFT")) {
-			dir = Vector2.Left;
-		} else if (Input.IsActionPressed("RIGHT")) {
-			dir = Vector2.Right;
+	public override void _Process(double delta) {
+		if (Input.IsActionPressed("UP") && this.direction != Vector2I.Down) {
+			this.direction = Vector2I.Up;
+		} else if (Input.IsActionPressed("DOWN") && this.direction != Vector2I.Up) {
+			this.direction = Vector2I.Down;
+		} else if (Input.IsActionPressed("LEFT") && this.direction != Vector2I.Right) {
+			this.direction = Vector2I.Left;
+		} else if (Input.IsActionPressed("RIGHT") && this.direction != Vector2I.Left) {
+			this.direction = Vector2I.Right;
 		}
-		this.Position += dir * 10;
+	}
+
+	public void Tick() {
+		Vector2I direction = this.direction;
+		Vector2 previousPosition = Vector2.Zero;
+		bool first = true;
+		foreach (Cell cell in this.segments) {
+			Vector2 initialPosition = cell.Position;
+			if (!first) {
+				direction = DetermineDirection(previousPosition, cell);
+			}
+			cell.MovePosition(direction);
+			first = false;
+			previousPosition = initialPosition;
+		}
+	}
+
+	private Vector2I DetermineDirection(Vector2 previous, Cell current) {
+		Vector2 delta = previous - current.Position;
+		if (delta.X > 0) {
+			return Vector2I.Right;
+		}
+		if (delta.X < 0) {
+			return Vector2I.Left;
+		}
+		if (delta.Y > 0) {
+			return Vector2I.Down;
+		}
+		if (delta.Y < 0) {
+			return Vector2I.Up;
+		}
+		throw new Exception(string.Format("Could not determine direction prev %s cur %s", previous, current));
 	}
 }

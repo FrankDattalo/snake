@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dy4h4jg7bverr"]
+
+[ext_resource type="PackedScene" uid="uid://2nnlhj5p2eqj" path="res://Cell.tscn" id="1_um0uj"]
+[ext_resource type="Script" path="res://Food.cs" id="1_v0cv2"]
+
+[node name="Food" type="Node2D"]
+script = ExtResource("1_v0cv2")
+
+[node name="Cell" parent="." instance=ExtResource("1_um0uj")]
+script = ExtResource("1_v0cv2")

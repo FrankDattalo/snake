@@ -3,19 +3,21 @@
 [ext_resource type="Script" path="res://Cell.cs" id="1_xtago"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2u5wm"]
-size = Vector2(40, 40)
 
 [node name="Cell" type="Node2D"]
 position = Vector2(2.08165e-12, 2.08165e-12)
 script = ExtResource("1_xtago")
 
 [node name="CellColor" type="ColorRect" parent="."]
-offset_right = 40.0
-offset_bottom = 40.0
+visibility_layer = 2
+offset_right = 20.0
+offset_bottom = 20.0
 color = Color(1, 1, 0.172549, 1)
 
 [node name="CellBody" type="RigidBody2D" parent="."]
+collision_mask = 2
+gravity_scale = 1.66533e-16
 
 [node name="CellShape" type="CollisionShape2D" parent="CellBody"]
-position = Vector2(20, 20)
+position = Vector2(10, 10)
 shape = SubResource("RectangleShape2D_2u5wm")

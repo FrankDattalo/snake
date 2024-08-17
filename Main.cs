@@ -30,12 +30,14 @@ public partial class Main : Node2D {
 	}
 
 	private void OnFoodTick() {
-		Console.WriteLine("Food tick");
+		// TODO: move to globals
 		int xMax = viewportSize.X / 20;
 		int yMax = viewportSize.Y / 20;
 		Vector2I pos = new Vector2I(random.Next(xMax), random.Next(yMax));
 
 		Food food = FoodScene.Instantiate<Food>();
-		food.Position = pos;
+		food.PositionI = pos;
+		AddChild(food);
+
 	}
 }

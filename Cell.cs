@@ -4,23 +4,12 @@ using System.IO;
 using System.Numerics;
 using System.Reflection.Metadata;
 
-public partial class Cell : Node2D
-{
-    [Export]
-    public int CellSize { get; set; } = 20;
-
-    public Color Color { get; set; }
+public partial class Cell : Node2D {
 
     public void SetPosition(Vector2I relative) {
-        this.Position = relative * this.CellSize;
     }
 
     public void MovePosition(Vector2I relative) {
-        this.Position += relative * this.CellSize;
-    }
-
-    public void SetColor(Color color) {
-        this.Color = color;
     }
 
     public override void _Ready() {

@@ -17,13 +17,13 @@ public partial class Player : Node2D {
 
 	public override void _Ready() {
 		Random random = Random.Shared;
-		// Color[] colors = new Color[] { Utils.Colors.YELLOW, Utils.Colors.BLUE, Utils.Colors.GREEN, Utils.Colors.RED, };
+		Color[] colors = new Color[] { Utils.Colors.YELLOW, Utils.Colors.BLUE, Utils.Colors.GREEN, Utils.Colors.RED, };
 
 		for (int i = 0; i < this.StartingSegmentCount; i++) {
 			Cell cell = CellScene.Instantiate<Cell>();
 			cell.SetPosition(new Vector2I(-i, 0));
-			Color color = new Color(random.Next(256), random.Next(256), random.Next(256));
-			cell.SetColor(color);
+			cell.Color = colors[random.Next(colors.Length)];
+			// cell.Color = new Color(random.Next(256), random.Next(256), random.Next(256));
 			segments.Add(cell);
 			// ensure godot tracks it
 			this.AddChild(cell);

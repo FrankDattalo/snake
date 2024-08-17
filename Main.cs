@@ -6,37 +6,40 @@ public partial class Main : Node2D {
 	[Export]
 	public PackedScene FoodScene { get; set; }
 
+	private TileMap tileMap;
+
 	private Player player;
 
-	private Vector2I viewportSize;
-
-	private Random random = Random.Shared;
+	private Vector2 viewportSize;
 
 	public override void _Ready() {
-		this.player = GetNode<Player>("Player");
+		viewportSize = GetViewportRect().Size;
+
+		tileMap = GetNode<TileMap>("TileMap");
+		player = GetNode<Player>("Player");
+
+		Vector2I startingTileMapPosition = tileMap.LocalToMap(Vector2.Zero);
+		player.SetPosition(tileMap, startingTileMapPosition);
 
 		Timer movementTimer = GetNode<Timer>("MovementTimer");
 		Timer foodTimer = GetNode<Timer>("FoodTimer");
-
-		Vector2 viewportSizeFl = GetViewportRect().Size;
-		viewportSize = new Vector2I((int) viewportSizeFl.X, (int) viewportSizeFl.Y);
 
 		movementTimer.Start();
 		foodTimer.Start();
 	}
 
 	private void OnMovementTick() {
-		this.player.Tick();
+		this.player.Tick(tileMap);
 	}
 
 	private void OnFoodTick() {
-		// TODO: move to globals
-		int xMax = viewportSize.X / 20;
-		int yMax = viewportSize.Y / 20;
-		Vector2I pos = new Vector2I(random.Next(xMax), random.Next(yMax));
-
+		Random random = Random.Shared;
+		Vector2 position = new Vector2((
+			float) random.NextDouble() * viewportSize.X,
+			(float) random.NextDouble() * viewportSize.Y);
 		Food food = FoodScene.Instantiate<Food>();
-		food.PositionI = pos;
+		Vector2I tileMapPosition = tileMap.LocalToMap(position);
+		food.SetPosition(tileMap, tileMapPosition);
 		AddChild(food);
 
 	}

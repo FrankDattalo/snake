@@ -8,24 +8,14 @@ public partial class Player : Node2D {
 	[Export]
 	public PackedScene CellScene { get; set; }
 
-	[Export]
-	public int StartingSegmentCount { get; set; } = 100;
-
 	private Vector2I direction = Vector2I.Zero;
 
 	private readonly List<Cell> segments = new List<Cell>();
 
 	public override void _Ready() {
-		Random random = Random.Shared;
-		Color[] colors = new Color[] { Utils.Colors.YELLOW, Utils.Colors.BLUE, Utils.Colors.GREEN, Utils.Colors.RED, };
-
-		for (int i = 0; i < this.StartingSegmentCount; i++) {
+		for (int i = 0; i < 1; i++) {
 			Cell cell = CellScene.Instantiate<Cell>();
-			cell.SetPosition(new Vector2I(-i, 0));
-			cell.Color = colors[random.Next(colors.Length)];
-			// cell.Color = new Color(random.Next(256), random.Next(256), random.Next(256));
 			segments.Add(cell);
-			// ensure godot tracks it
 			this.AddChild(cell);
 		}
 
@@ -33,18 +23,24 @@ public partial class Player : Node2D {
 	}
 
 	public override void _Process(double delta) {
-		if (Input.IsActionPressed("UP") && this.direction != Vector2I.Down) {
+		if (Input.IsActionPressed("UP") && (this.direction != Vector2I.Down || this.segments.Count == 1)) {
 			this.direction = Vector2I.Up;
-		} else if (Input.IsActionPressed("DOWN") && this.direction != Vector2I.Up) {
+		} else if (Input.IsActionPressed("DOWN") && (this.direction != Vector2I.Up || this.segments.Count == 1)) {
 			this.direction = Vector2I.Down;
-		} else if (Input.IsActionPressed("LEFT") && this.direction != Vector2I.Right) {
+		} else if (Input.IsActionPressed("LEFT") && (this.direction != Vector2I.Right || this.segments.Count == 1)) {
 			this.direction = Vector2I.Left;
-		} else if (Input.IsActionPressed("RIGHT") && this.direction != Vector2I.Left) {
+		} else if (Input.IsActionPressed("RIGHT") && (this.direction != Vector2I.Left || this.segments.Count == 1)) {
 			this.direction = Vector2I.Right;
 		}
 	}
 
-	public void Tick() {
+	public void SetPosition(TileMap tileMap, Vector2I tileMapPosition) {
+		foreach (Cell cell in this.segments) {
+			cell.SetPosition(tileMap, tileMapPosition);
+		}
+	}
+
+	public void Tick(TileMap tileMap) {
 		Vector2I direction = this.direction;
 		Vector2 previousPosition = Vector2.Zero;
 		bool first = true;
@@ -53,7 +49,7 @@ public partial class Player : Node2D {
 			if (!first) {
 				direction = DetermineDirection(previousPosition, cell);
 			}
-			cell.MovePosition(direction);
+			cell.MovePosition(tileMap, direction);
 			first = false;
 			previousPosition = initialPosition;
 		}

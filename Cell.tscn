@@ -1,8 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://2nnlhj5p2eqj"]
+[gd_scene load_steps=2 format=3 uid="uid://2nnlhj5p2eqj"]
 
 [ext_resource type="Script" path="res://Cell.cs" id="1_xtago"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2u5wm"]
 
 [node name="Cell" type="Node2D"]
 position = Vector2(2.08165e-12, 2.08165e-12)
@@ -10,14 +8,6 @@ script = ExtResource("1_xtago")
 
 [node name="CellColor" type="ColorRect" parent="."]
 visibility_layer = 2
-offset_right = 20.0
-offset_bottom = 20.0
-color = Color(1, 1, 0.172549, 1)
-
-[node name="CellBody" type="RigidBody2D" parent="."]
-collision_mask = 2
-gravity_scale = 1.66533e-16
-
-[node name="CellShape" type="CollisionShape2D" parent="CellBody"]
-position = Vector2(10, 10)
-shape = SubResource("RectangleShape2D_2u5wm")
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.901961, 0.47451, 0.529412, 1)

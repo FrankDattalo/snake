@@ -3,7 +3,7 @@ using System;
 
 public partial class Main : Node2D {
 
-	private static readonly int MAX_FOOD_ATTEMPTS = 1000;
+	private static readonly int MAX_FOOD_ATTEMPTS = 10;
 
 	[Export]
 	public PackedScene FoodScene { get; set; }

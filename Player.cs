@@ -19,11 +19,11 @@ public partial class Player : Node2D {
 	}
 
 	public override void _Ready() {
-		for (int i = 0; i < 1; i++) {
-			Cell cell = CellScene.Instantiate<Cell>();
-			segments.Add(cell);
-			this.AddChild(cell);
-		}
+		Cell cell = CellScene.Instantiate<Cell>();
+		cell.Color = new Color(0x0043150); // TODO refactor - magic number
+		cell.ZIndex = 3; // TODO refactor - magic number
+		segments.Add(cell);
+		this.AddChild(cell);
 
 		this.direction = Vector2I.Right;
 	}
@@ -57,10 +57,11 @@ public partial class Player : Node2D {
 				// head movement, detect collision
 				Vector2I targetPosition = cell.NextPosition(tileMap, direction);
 				if (Utils.Tiles.TileContainsCell(tileMap, targetPosition)) {
-					cell.MovePosition(tileMap, direction);
+					EmitSignal(SignalName.OnPlayerDied);
+
 				} else if (Utils.Tiles.TileContainsFood(tileMap, targetPosition)) {
 					// clear the food
-					tileMap.SetCell(0, targetPosition, -1);
+					Utils.Tiles.ClearTile(tileMap, targetPosition);
 					// grow the snake
 					growCount++;
 					cell.MovePosition(tileMap, direction);
@@ -99,4 +100,7 @@ public partial class Player : Node2D {
 		}
 		throw new Exception(string.Format("Could not determine direction prev %s cur %s", previous, current));
 	}
+
+	[Signal]
+	public delegate void OnPlayerDiedEventHandler();
 }

@@ -28,6 +28,10 @@ public class Utils {
             return GetCellAltId(tileMap, coordinates) == CELL_TILE_ALT_ID;
         }
 
+        public static void ClearTile(TileMap tileMap, Vector2I coordinates) {
+            tileMap.SetCell(TILE_MAP_LAYER, coordinates, -1);
+        }
+
         private static int GetCellAltId(TileMap tileMap, Vector2I coordinates) {
 
             int cellSourceId = tileMap.GetCellSourceId(TILE_MAP_LAYER, coordinates);

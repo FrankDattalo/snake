@@ -6,6 +6,17 @@ using System.Reflection.Metadata;
 
 public partial class Cell : Node2D {
 
+    private ColorRect cell;
+    public Color? Color { get; set; } = null;
+
+    public override void _Ready() {
+        cell = GetNode<ColorRect>("CellColor");
+
+        if (Color != null) {
+            cell.Color = (Color) Color;
+        }
+    }
+
     public void SetPosition(TileMap tileMap, Vector2I position) {
         Position = tileMap.MapToLocal(position);
     }

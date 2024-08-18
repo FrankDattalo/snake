@@ -11,6 +11,10 @@ public partial class Cell : Node2D {
     }
 
     public void MovePosition(TileMap tileMap, Vector2I direction) {
-        SetPosition(tileMap, tileMap.LocalToMap(Position)  + direction);
+        SetPosition(tileMap, NextPosition(tileMap, direction));
+    }
+
+    public Vector2I NextPosition(TileMap tileMap, Vector2I direction) {
+        return tileMap.LocalToMap(Position)  + direction;
     }
 }

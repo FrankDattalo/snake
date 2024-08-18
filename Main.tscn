@@ -1,27 +1,29 @@
-[gd_scene load_steps=6 format=3 uid="uid://dwhk34mslcrat"]
+[gd_scene load_steps=7 format=3 uid="uid://dwhk34mslcrat"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_2k48u"]
 [ext_resource type="PackedScene" uid="uid://dy4h4jg7bverr" path="res://Food.tscn" id="2_4ee1x"]
 [ext_resource type="PackedScene" uid="uid://di7pvam0u36dh" path="res://Player.tscn" id="2_sboy1"]
-[ext_resource type="Script" path="res://Globals.cs" id="3_6ymhx"]
+[ext_resource type="PackedScene" uid="uid://2nnlhj5p2eqj" path="res://Cell.tscn" id="4_2ltxi"]
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_7t3ds"]
+resource_name = "TileSet"
+scenes/1/scene = ExtResource("2_4ee1x")
+scenes/2/scene = ExtResource("4_2ltxi")
 
 [sub_resource type="TileSet" id="TileSet_ffk7b"]
+sources/1 = SubResource("TileSetScenesCollectionSource_7t3ds")
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_2k48u")
 FoodScene = ExtResource("2_4ee1x")
 
-[node name="Globals" type="Node" parent="."]
-script = ExtResource("3_6ymhx")
-CellSize = null
-StartingSegmentCount = null
-
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_ffk7b")
 format = 2
+layer_0/name = "MainLayer"
 
 [node name="FoodTimer" type="Timer" parent="."]
-wait_time = 2.0
+wait_time = 0.1
 
 [node name="MovementTimer" type="Timer" parent="."]
 wait_time = 0.05

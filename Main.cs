@@ -3,6 +3,8 @@ using System;
 
 public partial class Main : Node2D {
 
+	private static readonly int MAX_FOOD_ATTEMPTS = 1000;
+
 	[Export]
 	public PackedScene FoodScene { get; set; }
 
@@ -34,13 +36,39 @@ public partial class Main : Node2D {
 
 	private void OnFoodTick() {
 		Random random = Random.Shared;
-		Vector2 position = new Vector2((
-			float) random.NextDouble() * viewportSize.X,
-			(float) random.NextDouble() * viewportSize.Y);
-		Food food = FoodScene.Instantiate<Food>();
-		Vector2I tileMapPosition = tileMap.LocalToMap(position);
-		food.SetPosition(tileMap, tileMapPosition);
-		AddChild(food);
 
+		for (int attempt = 0; attempt < MAX_FOOD_ATTEMPTS; attempt++) {
+
+			Vector2 position = new Vector2(
+				(float) random.NextDouble() * viewportSize.X,
+				(float) random.NextDouble() * viewportSize.Y);
+
+			Vector2I tileMapPosition = tileMap.LocalToMap(position);
+
+			if (IsTileEmpty(tileMapPosition)) {
+
+				tileMap.SetCell(
+					Utils.Tiles.TILE_MAP_LAYER,
+					tileMapPosition,
+					Utils.Tiles.TILE_MAP_SOURCE_ID,
+					/* atlas coords */ Vector2I.Zero,
+					Utils.Tiles.FOOD_TILE_ALT_ID);
+
+				return;
+			}
+		}
+	}
+
+	private bool IsTileEmpty(Vector2I tileMapPosition) {
+		if (!Utils.Tiles.TileIsEmpty(tileMap, tileMapPosition)) {
+			return false;
+		}
+		foreach (Cell cell in player.Cells) {
+			Vector2I cellPosition = tileMap.LocalToMap(cell.Position);
+			if (cellPosition == tileMapPosition) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

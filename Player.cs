@@ -12,6 +12,12 @@ public partial class Player : Node2D {
 
 	private readonly List<Cell> segments = new List<Cell>();
 
+	public IEnumerable<Cell> Cells {
+		get {
+			return segments;
+		}
+	}
+
 	public override void _Ready() {
 		for (int i = 0; i < 1; i++) {
 			Cell cell = CellScene.Instantiate<Cell>();
@@ -44,14 +50,36 @@ public partial class Player : Node2D {
 		Vector2I direction = this.direction;
 		Vector2 previousPosition = Vector2.Zero;
 		bool first = true;
+		int growCount = 0;
 		foreach (Cell cell in this.segments) {
 			Vector2 initialPosition = cell.Position;
-			if (!first) {
+			if (first) {
+				// head movement, detect collision
+				Vector2I targetPosition = cell.NextPosition(tileMap, direction);
+				if (Utils.Tiles.TileContainsCell(tileMap, targetPosition)) {
+					cell.MovePosition(tileMap, direction);
+				} else if (Utils.Tiles.TileContainsFood(tileMap, targetPosition)) {
+					// clear the food
+					tileMap.SetCell(0, targetPosition, -1);
+					// grow the snake
+					growCount++;
+					cell.MovePosition(tileMap, direction);
+				} else {
+					cell.MovePosition(tileMap, direction);
+				}
+			} else {
+				// tail movement
 				direction = DetermineDirection(previousPosition, cell);
+				cell.MovePosition(tileMap, direction);
 			}
-			cell.MovePosition(tileMap, direction);
 			first = false;
 			previousPosition = initialPosition;
+		}
+		for (int i = 0; i < growCount; i++) {
+			Cell cell = CellScene.Instantiate<Cell>();
+			cell.Position = previousPosition;
+			segments.Add(cell);
+			this.AddChild(cell);
 		}
 	}
 

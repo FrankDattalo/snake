@@ -6,6 +6,8 @@
 script = ExtResource("1_uav6q")
 
 [node name="FoodColor" type="ColorRect" parent="."]
-offset_right = 16.0
-offset_bottom = 16.0
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
 color = Color(1, 1, 0, 1)

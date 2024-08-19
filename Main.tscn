@@ -14,10 +14,10 @@ scenes/2/scene = ExtResource("4_2ltxi")
 sources/1 = SubResource("TileSetScenesCollectionSource_7t3ds")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_skwm1"]
-size = Vector2(63.75, 720)
+size = Vector2(64, 720)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_smskg"]
-size = Vector2(1279.88, 64)
+size = Vector2(1280, 64)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_2k48u")
@@ -31,7 +31,7 @@ tile_set = SubResource("TileSet_ffk7b")
 wait_time = 0.1
 
 [node name="MovementTimer" type="Timer" parent="."]
-wait_time = 0.05
+wait_time = 0.1
 
 [node name="KillZones" type="Area2D" parent="."]
 
@@ -44,11 +44,11 @@ position = Vector2(1312, 360)
 shape = SubResource("RectangleShape2D_skwm1")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="KillZones"]
-position = Vector2(640.062, 752)
+position = Vector2(640, 752)
 shape = SubResource("RectangleShape2D_smskg")
 
 [node name="CollisionShape2D1" type="CollisionShape2D" parent="KillZones"]
-position = Vector2(640.125, -32)
+position = Vector2(640, -32)
 shape = SubResource("RectangleShape2D_smskg")
 
 [node name="Player" parent="." instance=ExtResource("2_sboy1")]

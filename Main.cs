@@ -33,15 +33,17 @@ public partial class Main : Node2D {
 
 	private void NewGame() {
 		player.SetPosition(tileMap, RandomPosition());
+		Vector2I[] dirs = new Vector2I[]{ Vector2I.Left, Vector2I.Right, Vector2I.Up, Vector2I.Down };
+		player.Direction = dirs[GD.Randi() % dirs.Count()];
 		player.DropTail();
 
 		Timer movementTimer = GetNode<Timer>("MovementTimer");
 		Timer foodTimer = GetNode<Timer>("FoodTimer");
 
+		GetTree().CallGroup("AllFood", Node.MethodName.QueueFree);
+
 		movementTimer.Start();
 		foodTimer.Start();
-
-		GetTree().CallGroup("AllFood", Node.MethodName.QueueFree);
 	}
 
 	private void OnMovementTick() {

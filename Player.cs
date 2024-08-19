@@ -8,7 +8,7 @@ public partial class Player : Node2D {
 	[Export]
 	public PackedScene CellScene { get; set; }
 
-	private Vector2I direction = Vector2I.Zero;
+	public Vector2I Direction { get; set; } = Vector2I.Zero;
 
 	private readonly List<Cell> segments = new List<Cell>();
 	private Cell head;
@@ -26,18 +26,18 @@ public partial class Player : Node2D {
 		segments.Add(head);
 		this.AddChild(head);
 
-		this.direction = Vector2I.Right;
+		this.Direction = Vector2I.Right;
 	}
 
 	public override void _Process(double delta) {
-		if (Input.IsActionPressed("UP") && (this.direction != Vector2I.Down || this.segments.Count == 1)) {
-			this.direction = Vector2I.Up;
-		} else if (Input.IsActionPressed("DOWN") && (this.direction != Vector2I.Up || this.segments.Count == 1)) {
-			this.direction = Vector2I.Down;
-		} else if (Input.IsActionPressed("LEFT") && (this.direction != Vector2I.Right || this.segments.Count == 1)) {
-			this.direction = Vector2I.Left;
-		} else if (Input.IsActionPressed("RIGHT") && (this.direction != Vector2I.Left || this.segments.Count == 1)) {
-			this.direction = Vector2I.Right;
+		if (Input.IsActionPressed("UP") && (this.Direction != Vector2I.Down || this.segments.Count == 1)) {
+			this.Direction = Vector2I.Up;
+		} else if (Input.IsActionPressed("DOWN") && (this.Direction != Vector2I.Up || this.segments.Count == 1)) {
+			this.Direction = Vector2I.Down;
+		} else if (Input.IsActionPressed("LEFT") && (this.Direction != Vector2I.Right || this.segments.Count == 1)) {
+			this.Direction = Vector2I.Left;
+		} else if (Input.IsActionPressed("RIGHT") && (this.Direction != Vector2I.Left || this.segments.Count == 1)) {
+			this.Direction = Vector2I.Right;
 		}
 	}
 
@@ -59,7 +59,7 @@ public partial class Player : Node2D {
 	}
 
 	public void Tick(TileMapLayer tileMap) {
-		Vector2I direction = this.direction;
+		Vector2I direction = this.Direction;
 		Vector2 previousPosition = Vector2.Zero;
 		bool first = true;
 		int growCount = 0;

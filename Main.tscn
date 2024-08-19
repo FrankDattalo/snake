@@ -17,7 +17,7 @@ sources/1 = SubResource("TileSetScenesCollectionSource_7t3ds")
 size = Vector2(63.75, 720)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_smskg"]
-size = Vector2(1279.5, 64)
+size = Vector2(1279.88, 64)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_2k48u")
@@ -34,10 +34,9 @@ wait_time = 0.1
 wait_time = 0.05
 
 [node name="KillZones" type="Area2D" parent="."]
-position = Vector2(1, 0)
 
 [node name="CollisionShape2D4" type="CollisionShape2D" parent="KillZones"]
-position = Vector2(-32.125, 360)
+position = Vector2(-32, 360)
 shape = SubResource("RectangleShape2D_skwm1")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="KillZones"]
@@ -45,11 +44,11 @@ position = Vector2(1312, 360)
 shape = SubResource("RectangleShape2D_skwm1")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="KillZones"]
-position = Vector2(640, 752)
+position = Vector2(640.062, 752)
 shape = SubResource("RectangleShape2D_smskg")
 
 [node name="CollisionShape2D1" type="CollisionShape2D" parent="KillZones"]
-position = Vector2(640.25, -32)
+position = Vector2(640.125, -32)
 shape = SubResource("RectangleShape2D_smskg")
 
 [node name="Player" parent="." instance=ExtResource("2_sboy1")]

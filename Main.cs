@@ -20,14 +20,28 @@ public partial class Main : Node2D {
 		tileMap = GetNode<TileMapLayer>("MainLayer");
 		player = GetNode<Player>("Player");
 
-		Vector2I startingTileMapPosition = tileMap.LocalToMap(Vector2.Zero);
-		player.SetPosition(tileMap, startingTileMapPosition);
+		NewGame();
+	}
+
+	private Vector2I RandomPosition() {
+		Vector2 position = new Vector2(
+			GD.Randf() * viewportSize.X,
+			GD.Randf() * viewportSize.Y);
+
+		return tileMap.LocalToMap(position);
+	}
+
+	private void NewGame() {
+		player.SetPosition(tileMap, RandomPosition());
+		player.DropTail();
 
 		Timer movementTimer = GetNode<Timer>("MovementTimer");
 		Timer foodTimer = GetNode<Timer>("FoodTimer");
 
 		movementTimer.Start();
 		foodTimer.Start();
+
+		GetTree().CallGroup("AllFood", Node.MethodName.QueueFree);
 	}
 
 	private void OnMovementTick() {
@@ -35,15 +49,9 @@ public partial class Main : Node2D {
 	}
 
 	private void OnFoodTick() {
-		Random random = Random.Shared;
-
 		for (int attempt = 0; attempt < MAX_FOOD_ATTEMPTS; attempt++) {
 
-			Vector2 position = new Vector2(
-				(float) random.NextDouble() * viewportSize.X,
-				(float) random.NextDouble() * viewportSize.Y);
-
-			Vector2I tileMapPosition = tileMap.LocalToMap(position);
+			Vector2I tileMapPosition = RandomPosition();
 
 			if (IsTileEmpty(tileMapPosition)) {
 
@@ -72,5 +80,11 @@ public partial class Main : Node2D {
 		}
 
 		return true;
+	}
+
+	private void OnKillZonesAreaEntered(Area2D node) {
+		if (player.IsAncestorOf(node)) {
+			NewGame();
+		}
 	}
 }

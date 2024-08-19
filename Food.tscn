@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Food.cs" id="1_uav6q"]
 
-[node name="Food" type="Node2D"]
+[node name="Food" type="Node2D" groups=["AllFood"]]
 script = ExtResource("1_uav6q")
 
 [node name="FoodColor" type="ColorRect" parent="."]

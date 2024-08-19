@@ -11,6 +11,7 @@ public partial class Player : Node2D {
 	private Vector2I direction = Vector2I.Zero;
 
 	private readonly List<Cell> segments = new List<Cell>();
+	private Cell head;
 
 	public IEnumerable<Cell> Cells {
 		get {
@@ -19,11 +20,11 @@ public partial class Player : Node2D {
 	}
 
 	public override void _Ready() {
-		Cell cell = CellScene.Instantiate<Cell>();
-		cell.Color = new Color(0x0043150); // TODO refactor - magic number
-		cell.ZIndex = 3; // TODO refactor - magic number
-		segments.Add(cell);
-		this.AddChild(cell);
+		head = CellScene.Instantiate<Cell>();
+		head.Color = new Color(0x0043150); // TODO refactor - magic number
+		head.ZIndex = 3; // TODO refactor - magic number
+		segments.Add(head);
+		this.AddChild(head);
 
 		this.direction = Vector2I.Right;
 	}
@@ -38,6 +39,17 @@ public partial class Player : Node2D {
 		} else if (Input.IsActionPressed("RIGHT") && (this.direction != Vector2I.Left || this.segments.Count == 1)) {
 			this.direction = Vector2I.Right;
 		}
+	}
+
+	public void DropTail() {
+		segments.RemoveAll((Cell cell) => {
+			if (cell != head) {
+				cell.QueueFree();
+				return true;
+			} else {
+				return false;
+			}
+		});
 	}
 
 	public void SetPosition(TileMapLayer tileMap, Vector2I tileMapPosition) {

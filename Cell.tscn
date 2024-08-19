@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://2nnlhj5p2eqj"]
+[gd_scene load_steps=3 format=3 uid="uid://2nnlhj5p2eqj"]
 
 [ext_resource type="Script" path="res://Cell.cs" id="1_xtago"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6btm7"]
+size = Vector2(16, 16)
 
 [node name="Cell" type="Node2D"]
 position = Vector2(2.08165e-12, 2.08165e-12)
@@ -13,3 +16,9 @@ offset_top = -8.0
 offset_right = 8.0
 offset_bottom = 8.0
 color = Color(0, 0.47451, 0.941176, 1)
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-2.08165e-12, -2.08165e-12)
+shape = SubResource("RectangleShape2D_6btm7")

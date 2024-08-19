@@ -2,16 +2,19 @@ using Godot;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public partial class Player : Node2D {	
 
 	[Export]
 	public PackedScene CellScene { get; set; }
 
-	public Vector2I Direction { get; set; } = Vector2I.Zero;
+	public Vector2I PendingDirection { get; set; } = Vector2I.Right;
+	private Vector2I committedDirection = Vector2I.Zero;
 
 	private readonly List<Cell> segments = new List<Cell>();
 	private Cell head;
+	private int pendingGrowth = 0;
 
 	public IEnumerable<Cell> Cells {
 		get {
@@ -21,23 +24,22 @@ public partial class Player : Node2D {
 
 	public override void _Ready() {
 		head = CellScene.Instantiate<Cell>();
+		head.Player = this;
 		head.Color = new Color(0x0043150); // TODO refactor - magic number
 		head.ZIndex = 3; // TODO refactor - magic number
 		segments.Add(head);
 		this.AddChild(head);
-
-		this.Direction = Vector2I.Right;
 	}
 
 	public override void _Process(double delta) {
-		if (Input.IsActionPressed("UP") && (this.Direction != Vector2I.Down || this.segments.Count == 1)) {
-			this.Direction = Vector2I.Up;
-		} else if (Input.IsActionPressed("DOWN") && (this.Direction != Vector2I.Up || this.segments.Count == 1)) {
-			this.Direction = Vector2I.Down;
-		} else if (Input.IsActionPressed("LEFT") && (this.Direction != Vector2I.Right || this.segments.Count == 1)) {
-			this.Direction = Vector2I.Left;
-		} else if (Input.IsActionPressed("RIGHT") && (this.Direction != Vector2I.Left || this.segments.Count == 1)) {
-			this.Direction = Vector2I.Right;
+		if (Input.IsActionPressed("UP") && (committedDirection != Vector2I.Down || this.segments.Count == 1)) {
+			PendingDirection = Vector2I.Up;
+		} else if (Input.IsActionPressed("DOWN") && (committedDirection != Vector2I.Up || this.segments.Count == 1)) {
+			PendingDirection = Vector2I.Down;
+		} else if (Input.IsActionPressed("LEFT") && (committedDirection != Vector2I.Right || this.segments.Count == 1)) {
+			PendingDirection = Vector2I.Left;
+		} else if (Input.IsActionPressed("RIGHT") && (committedDirection != Vector2I.Left || this.segments.Count == 1)) {
+			PendingDirection = Vector2I.Right;
 		}
 	}
 
@@ -59,58 +61,37 @@ public partial class Player : Node2D {
 	}
 
 	public void Tick(TileMapLayer tileMap) {
-		Vector2I direction = this.Direction;
-		Vector2 previousPosition = Vector2.Zero;
-		bool first = true;
-		int growCount = 0;
+		committedDirection = PendingDirection;
+		Vector2I? previousPosition = null;
 		foreach (Cell cell in this.segments) {
-			Vector2 initialPosition = cell.Position;
-			if (first) {
-				// head movement, detect collision
-				Vector2I targetPosition = cell.NextPosition(tileMap, direction);
-				if (Utils.Tiles.TileContainsCell(tileMap, targetPosition)) {
-					EmitSignal(SignalName.OnPlayerDied);
-
-				} else if (Utils.Tiles.TileContainsFood(tileMap, targetPosition)) {
-					// clear the food
-					Utils.Tiles.ClearTile(tileMap, targetPosition);
-					// grow the snake
-					growCount++;
-					cell.MovePosition(tileMap, direction);
-				} else {
-					cell.MovePosition(tileMap, direction);
-				}
+			cell.HasMoved = true;
+			Vector2I initialPosition = tileMap.LocalToMap(cell.Position);
+			if (previousPosition == null) {
+				// head movement
+				Vector2I targetPosition = cell.NextPosition(tileMap, committedDirection);
+				cell.SetPosition(tileMap, targetPosition);
 			} else {
 				// tail movement
-				direction = DetermineDirection(previousPosition, cell);
-				cell.MovePosition(tileMap, direction);
+				cell.SetPosition(tileMap, (Vector2I) previousPosition);
 			}
-			first = false;
 			previousPosition = initialPosition;
 		}
-		for (int i = 0; i < growCount; i++) {
+		if (pendingGrowth > 0 && segments.Last().HasMoved) {
 			Cell cell = CellScene.Instantiate<Cell>();
-			cell.Position = previousPosition;
+			cell.Player = this;
+			cell.Position = tileMap.MapToLocal((Vector2I) previousPosition);
 			segments.Add(cell);
 			this.AddChild(cell);
+			pendingGrowth--;
 		}
 	}
 
-	private Vector2I DetermineDirection(Vector2 previous, Cell current) {
-		Vector2 delta = previous - current.Position;
-		if (delta.X > 0) {
-			return Vector2I.Right;
-		}
-		if (delta.X < 0) {
-			return Vector2I.Left;
-		}
-		if (delta.Y > 0) {
-			return Vector2I.Down;
-		}
-		if (delta.Y < 0) {
-			return Vector2I.Up;
-		}
-		throw new Exception(string.Format("Could not determine direction prev %s cur %s", previous, current));
+	public void OnFoodCollision() {
+		pendingGrowth++;
+	}
+
+	public void OnSelfCollision() {
+		EmitSignal(SignalName.OnPlayerDied);
 	}
 
 	[Signal]

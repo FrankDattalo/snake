@@ -3,8 +3,6 @@ using System;
 
 public partial class Main : Node2D {
 
-	private static readonly int MAX_FOOD_ATTEMPTS = 10;
-
 	[Export]
 	public PackedScene FoodScene { get; set; }
 
@@ -34,7 +32,7 @@ public partial class Main : Node2D {
 	private void NewGame() {
 		player.SetPosition(tileMap, RandomPosition());
 		Vector2I[] dirs = new Vector2I[]{ Vector2I.Left, Vector2I.Right, Vector2I.Up, Vector2I.Down };
-		player.Direction = dirs[GD.Randi() % dirs.Length];
+		player.PendingDirection = dirs[GD.Randi() % dirs.Length];
 		player.DropTail();
 
 		Timer movementTimer = GetNode<Timer>("MovementTimer");
@@ -51,37 +49,10 @@ public partial class Main : Node2D {
 	}
 
 	private void OnFoodTick() {
-		for (int attempt = 0; attempt < MAX_FOOD_ATTEMPTS; attempt++) {
-
-			Vector2I tileMapPosition = RandomPosition();
-
-			if (IsTileEmpty(tileMapPosition)) {
-
-				tileMap.SetCell(
-					tileMapPosition,
-					Utils.Tiles.TILE_MAP_SOURCE_ID,
-					/* atlas coords */ Vector2I.Zero,
-					Utils.Tiles.FOOD_TILE_ALT_ID);
-
-				return;
-			}
-		}
-	}
-
-	private bool IsTileEmpty(Vector2I tileMapPosition) {
-
-		if (!Utils.Tiles.TileIsEmpty(tileMap, tileMapPosition)) {
-			return false;
-		}
-
-		foreach (Cell cell in player.Cells) {
-			Vector2I cellPosition = tileMap.LocalToMap(cell.Position);
-			if (cellPosition == tileMapPosition) {
-				return false;
-			}
-		}
-
-		return true;
+		Food food = FoodScene.Instantiate<Food>();
+		food.SetPosition(tileMap, RandomPosition());
+		food.Player = player;
+		AddChild(food);
 	}
 
 	private void OnKillZonesAreaEntered(Area2D node) {

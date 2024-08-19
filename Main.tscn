@@ -56,3 +56,4 @@ shape = SubResource("RectangleShape2D_smskg")
 [connection signal="timeout" from="FoodTimer" to="." method="OnFoodTick"]
 [connection signal="timeout" from="MovementTimer" to="." method="OnMovementTick"]
 [connection signal="area_entered" from="KillZones" to="." method="OnKillZonesAreaEntered"]
+[connection signal="OnPlayerDied" from="Player" to="." method="NewGame"]

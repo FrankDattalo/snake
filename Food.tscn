@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://dy4h4jg7bverr"]
+[gd_scene load_steps=3 format=3 uid="uid://dy4h4jg7bverr"]
 
 [ext_resource type="Script" path="res://Food.cs" id="1_uav6q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q5t4n"]
+size = Vector2(10, 10)
 
 [node name="Food" type="Node2D" groups=["AllFood"]]
 script = ExtResource("1_uav6q")
@@ -11,3 +14,10 @@ offset_top = -6.0
 offset_right = 6.0
 offset_bottom = 6.0
 color = Color(1, 1, 0, 1)
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_q5t4n")
+
+[connection signal="area_entered" from="Area2D" to="." method="OnFoodCollision"]

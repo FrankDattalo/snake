@@ -11,36 +11,35 @@ public class Utils {
     }
 
     public static class Tiles {
-        public static readonly int TILE_MAP_LAYER = 0;
         public static readonly int TILE_MAP_SOURCE_ID = 1;
         public static readonly int FOOD_TILE_ALT_ID = 1;
         public static readonly int CELL_TILE_ALT_ID = 2;
 
-        public static bool TileIsEmpty(TileMap tileMap, Vector2I coordinates) {
+        public static bool TileIsEmpty(TileMapLayer tileMap, Vector2I coordinates) {
             return GetCellAltId(tileMap, coordinates) < 0;
         }
 
-        public static bool TileContainsFood(TileMap tileMap, Vector2I coordinates) {
+        public static bool TileContainsFood(TileMapLayer tileMap, Vector2I coordinates) {
             return GetCellAltId(tileMap, coordinates) == FOOD_TILE_ALT_ID;
         }
 
-        public static bool TileContainsCell(TileMap tileMap, Vector2I coordinates) {
+        public static bool TileContainsCell(TileMapLayer tileMap, Vector2I coordinates) {
             return GetCellAltId(tileMap, coordinates) == CELL_TILE_ALT_ID;
         }
 
-        public static void ClearTile(TileMap tileMap, Vector2I coordinates) {
-            tileMap.SetCell(TILE_MAP_LAYER, coordinates, -1);
+        public static void ClearTile(TileMapLayer tileMap, Vector2I coordinates) {
+            tileMap.SetCell(coordinates, -1);
         }
 
-        private static int GetCellAltId(TileMap tileMap, Vector2I coordinates) {
+        private static int GetCellAltId(TileMapLayer tileMap, Vector2I coordinates) {
 
-            int cellSourceId = tileMap.GetCellSourceId(TILE_MAP_LAYER, coordinates);
+            int cellSourceId = tileMap.GetCellSourceId(coordinates);
 
             if (cellSourceId < 0) {
                 return -1;
             }
 
-            return tileMap.GetCellAlternativeTile(TILE_MAP_LAYER, coordinates);
+            return tileMap.GetCellAlternativeTile(coordinates);
         }
     }
 }

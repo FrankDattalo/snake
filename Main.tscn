@@ -17,10 +17,9 @@ sources/1 = SubResource("TileSetScenesCollectionSource_7t3ds")
 script = ExtResource("1_2k48u")
 FoodScene = ExtResource("2_4ee1x")
 
-[node name="TileMap" type="TileMap" parent="."]
+[node name="MainLayer" type="TileMapLayer" parent="."]
+use_parent_material = true
 tile_set = SubResource("TileSet_ffk7b")
-format = 2
-layer_0/name = "MainLayer"
 
 [node name="FoodTimer" type="Timer" parent="."]
 wait_time = 0.1

@@ -40,13 +40,13 @@ public partial class Player : Node2D {
 		}
 	}
 
-	public void SetPosition(TileMap tileMap, Vector2I tileMapPosition) {
+	public void SetPosition(TileMapLayer tileMap, Vector2I tileMapPosition) {
 		foreach (Cell cell in this.segments) {
 			cell.SetPosition(tileMap, tileMapPosition);
 		}
 	}
 
-	public void Tick(TileMap tileMap) {
+	public void Tick(TileMapLayer tileMap) {
 		Vector2I direction = this.direction;
 		Vector2 previousPosition = Vector2.Zero;
 		bool first = true;

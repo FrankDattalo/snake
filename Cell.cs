@@ -17,15 +17,15 @@ public partial class Cell : Node2D {
         }
     }
 
-    public void SetPosition(TileMap tileMap, Vector2I position) {
+    public void SetPosition(TileMapLayer tileMap, Vector2I position) {
         Position = tileMap.MapToLocal(position);
     }
 
-    public void MovePosition(TileMap tileMap, Vector2I direction) {
+    public void MovePosition(TileMapLayer tileMap, Vector2I direction) {
         SetPosition(tileMap, NextPosition(tileMap, direction));
     }
 
-    public Vector2I NextPosition(TileMap tileMap, Vector2I direction) {
+    public Vector2I NextPosition(TileMapLayer tileMap, Vector2I direction) {
         return tileMap.LocalToMap(Position)  + direction;
     }
 }

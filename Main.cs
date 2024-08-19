@@ -8,7 +8,7 @@ public partial class Main : Node2D {
 	[Export]
 	public PackedScene FoodScene { get; set; }
 
-	private TileMap tileMap;
+	private TileMapLayer tileMap;
 
 	private Player player;
 
@@ -17,7 +17,7 @@ public partial class Main : Node2D {
 	public override void _Ready() {
 		viewportSize = GetViewportRect().Size;
 
-		tileMap = GetNode<TileMap>("TileMap");
+		tileMap = GetNode<TileMapLayer>("MainLayer");
 		player = GetNode<Player>("Player");
 
 		Vector2I startingTileMapPosition = tileMap.LocalToMap(Vector2.Zero);
@@ -48,7 +48,6 @@ public partial class Main : Node2D {
 			if (IsTileEmpty(tileMapPosition)) {
 
 				tileMap.SetCell(
-					Utils.Tiles.TILE_MAP_LAYER,
 					tileMapPosition,
 					Utils.Tiles.TILE_MAP_SOURCE_ID,
 					/* atlas coords */ Vector2I.Zero,
@@ -60,15 +59,18 @@ public partial class Main : Node2D {
 	}
 
 	private bool IsTileEmpty(Vector2I tileMapPosition) {
+
 		if (!Utils.Tiles.TileIsEmpty(tileMap, tileMapPosition)) {
 			return false;
 		}
+
 		foreach (Cell cell in player.Cells) {
 			Vector2I cellPosition = tileMap.LocalToMap(cell.Position);
 			if (cellPosition == tileMapPosition) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 }

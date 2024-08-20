@@ -16,11 +16,18 @@ public partial class Player : Node2D {
 	private Cell head;
 	private int pendingGrowth = 0;
 
+	public int SegmentCount {
+		get {
+			return segments.Count;
+		}
+	}
+
 	public void OnGameStart(TileMapLayer tileMap, Vector2I position) {
 		ClearSegments();
 		head = CellScene.Instantiate<Cell>();
 		head.Player = this;
-		head.Color = new Color(0x0043150); // TODO refactor - magic number
+		//head.Color = new Color(0x0043150); // TODO refactor - magic number
+		head.Color = new Color(0xffffffff); // TODO refactor - magic number
 		head.ZIndex = 3; // TODO refactor - magic number
 		segments.Add(head);
 		this.AddChild(head);

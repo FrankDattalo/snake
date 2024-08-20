@@ -11,7 +11,7 @@ script = ExtResource("1_xtago")
 
 [node name="CellColor" type="ColorRect" parent="."]
 visibility_layer = 2
-z_index = 1
+z_index = 2
 offset_left = -8.0
 offset_top = -8.0
 offset_right = 8.0

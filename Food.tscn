@@ -9,6 +9,7 @@ size = Vector2(10, 10)
 script = ExtResource("1_uav6q")
 
 [node name="FoodColor" type="ColorRect" parent="."]
+z_index = 1
 offset_left = -6.0
 offset_top = -6.0
 offset_right = 6.0

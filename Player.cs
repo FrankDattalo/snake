@@ -16,19 +16,15 @@ public partial class Player : Node2D {
 	private Cell head;
 	private int pendingGrowth = 0;
 
-	public IEnumerable<Cell> Cells {
-		get {
-			return segments;
-		}
-	}
-
-	public override void _Ready() {
+	public void OnGameStart(TileMapLayer tileMap, Vector2I position) {
+		ClearSegments();
 		head = CellScene.Instantiate<Cell>();
 		head.Player = this;
 		head.Color = new Color(0x0043150); // TODO refactor - magic number
 		head.ZIndex = 3; // TODO refactor - magic number
 		segments.Add(head);
 		this.AddChild(head);
+		head.SetPosition(tileMap, position);
 	}
 
 	public override void _Process(double delta) {
@@ -43,21 +39,12 @@ public partial class Player : Node2D {
 		}
 	}
 
-	public void DropTail() {
-		segments.RemoveAll((Cell cell) => {
-			if (cell != head) {
-				cell.QueueFree();
-				return true;
-			} else {
-				return false;
-			}
-		});
-	}
-
-	public void SetPosition(TileMapLayer tileMap, Vector2I tileMapPosition) {
-		foreach (Cell cell in this.segments) {
-			cell.SetPosition(tileMap, tileMapPosition);
+	public void ClearSegments() {
+		foreach (Cell segment in segments) {
+			segment.QueueFree();
 		}
+		segments.Clear();
+		head = null;
 	}
 
 	public void Tick(TileMapLayer tileMap) {

@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://dwhk34mslcrat"]
+[gd_scene load_steps=10 format=3 uid="uid://dwhk34mslcrat"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_2k48u"]
 [ext_resource type="PackedScene" uid="uid://dy4h4jg7bverr" path="res://Food.tscn" id="2_4ee1x"]
 [ext_resource type="PackedScene" uid="uid://di7pvam0u36dh" path="res://Player.tscn" id="2_sboy1"]
 [ext_resource type="PackedScene" uid="uid://2nnlhj5p2eqj" path="res://Cell.tscn" id="4_2ltxi"]
+[ext_resource type="FontFile" uid="uid://b24dl7igfow50" path="res://Jersey10-Regular.ttf" id="5_x72m7"]
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_7t3ds"]
 resource_name = "TileSet"
@@ -53,7 +54,51 @@ shape = SubResource("RectangleShape2D_smskg")
 
 [node name="Player" parent="." instance=ExtResource("2_sboy1")]
 
+[node name="UI" type="Control" parent="."]
+z_index = 10
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+
+[node name="TitleText" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -210.0
+offset_right = 225.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("5_x72m7")
+theme_override_font_sizes/font_size = 200
+text = "Snake!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartGameButton" type="Button" parent="UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -202.0
+offset_top = -220.0
+offset_right = 202.0
+offset_bottom = -104.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("5_x72m7")
+theme_override_font_sizes/font_size = 100
+text = "Start Game"
+
 [connection signal="timeout" from="FoodTimer" to="." method="OnFoodTick"]
 [connection signal="timeout" from="MovementTimer" to="." method="OnMovementTick"]
 [connection signal="area_entered" from="KillZones" to="." method="OnKillZonesAreaEntered"]
-[connection signal="OnPlayerDied" from="Player" to="." method="NewGame"]
+[connection signal="OnPlayerDied" from="Player" to="." method="GameOver"]
+[connection signal="pressed" from="UI/StartGameButton" to="." method="NewGame"]

@@ -6,7 +6,7 @@ public partial class Main : Node2D {
 	[Export]
 	public PackedScene FoodScene { get; set; }
 
-	private TileMapLayer tileMap;
+	public TileMapLayer TileMap { get; set; }
 
 	private Player player;
 
@@ -14,7 +14,6 @@ public partial class Main : Node2D {
 
 	private Control menuUi;
 	private Control gameUi;
-	private Timer movementTimer;
 	private Timer foodTimer;
 
 	private Label scoreCounter;
@@ -23,22 +22,25 @@ public partial class Main : Node2D {
 
 	private int activeFood = 0;
 
-	private int MAX_ACTIVE_FOOD_COUNT = 10;
+	private int MAX_ACTIVE_FOOD_COUNT = 100;
+
+	public bool GameStarted { get; private set; } = false;
 
 	public override void _Ready() {
 		viewportSize = GetViewportRect().Size;
 
-		tileMap = GetNode<TileMapLayer>("MainLayer");
+		TileMap = GetNode<TileMapLayer>("MainLayer");
 		player = GetNode<Player>("Player");
 		menuUi = GetNode<Control>("MenuUI");
 		gameUi = GetNode<Control>("GameUI");
-		movementTimer = GetNode<Timer>("MovementTimer");
 		foodTimer = GetNode<Timer>("FoodTimer");
 
 		scoreCounter = GetNode<Label>("GameUI/ScoreCounter");
 
 		gameUi.Visible = true;
 		menuUi.Visible = true;
+
+		player.Initialize(this);
 	}
 
 	private Vector2I RandomPosition() {
@@ -46,37 +48,35 @@ public partial class Main : Node2D {
 			GD.Randf() * viewportSize.X,
 			GD.Randf() * viewportSize.Y);
 
-		return tileMap.LocalToMap(position);
+		return TileMap.LocalToMap(position);
 	}
 
 	private void GameOver() {
 		menuUi.Visible = true;
 		gameUi.Visible = true;
-		movementTimer.Stop();
 		foodTimer.Stop();
+		GameStarted = false;
 	}
 
 	private void NewGame() {
 		menuUi.Visible = false;
 		gameUi.Visible = true;
 
-		Vector2I[] dirs = new Vector2I[]{ Vector2I.Left, Vector2I.Right, Vector2I.Up, Vector2I.Down };
-		player.PendingDirection = dirs[GD.Randi() % dirs.Length];
-		player.OnGameStart(tileMap, RandomPosition());
+		player.OnGameStart(RandomPosition());
 
 		GetTree().CallGroup("AllFood", Node.MethodName.QueueFree);
 		activeFood = 0;
 
-		movementTimer.Start();
 		foodTimer.Start();
+
+		GameStarted = true;
 	}
 
 	private void QuitGame() {
 		GetTree().Quit();
 	}
 
-	private void OnMovementTick() {
-		this.player.Tick(tileMap);
+	override public void _Process(double delta) {
 		int segmentCount = this.player.SegmentCount;
 		this.highScore = Math.Max(this.highScore, segmentCount);
 		this.scoreCounter.Text = $"Score: {segmentCount}\nHigh: {highScore}";
@@ -88,7 +88,7 @@ public partial class Main : Node2D {
 		}
 		activeFood++;
 		Food food = FoodScene.Instantiate<Food>();
-		food.SetPosition(tileMap, RandomPosition());
+		food.SetPosition(TileMap, RandomPosition());
 		food.Main = this;
 		food.Player = player;
 		AddChild(food);

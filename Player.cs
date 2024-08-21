@@ -9,12 +9,14 @@ public partial class Player : Node2D {
 	[Export]
 	public PackedScene CellScene { get; set; }
 
-	public Vector2I PendingDirection { get; set; } = Vector2I.Right;
+	private Vector2I PendingDirection { get; set; } = Vector2I.Right;
+	private Main main;
 	private Vector2I committedDirection = Vector2I.Zero;
 
 	private readonly List<Cell> segments = new List<Cell>();
 	private Cell head;
 	private int pendingGrowth = 0;
+
 
 	public int SegmentCount {
 		get {
@@ -22,7 +24,18 @@ public partial class Player : Node2D {
 		}
 	}
 
-	public void OnGameStart(TileMapLayer tileMap, Vector2I position) {
+	private bool Moving() {
+		return segments.Any((s) => s.Moving);
+	}
+
+	public void Initialize(Main main) {
+		this.main = main;
+	}
+
+	public void OnGameStart(Vector2I position) {
+		Vector2I[] dirs = new Vector2I[]{ Vector2I.Left, Vector2I.Right, Vector2I.Up, Vector2I.Down };
+		PendingDirection = dirs[GD.Randi() % dirs.Length];
+		// TODO: handle this better
 		ClearSegments();
 		head = CellScene.Instantiate<Cell>();
 		head.Player = this;
@@ -31,7 +44,7 @@ public partial class Player : Node2D {
 		head.ZIndex = 3; // TODO refactor - magic number
 		segments.Add(head);
 		this.AddChild(head);
-		head.SetPosition(tileMap, position);
+		head.SetPosition(main.TileMap, position);
 	}
 
 	public override void _Process(double delta) {
@@ -44,6 +57,10 @@ public partial class Player : Node2D {
 		} else if (Input.IsActionPressed("RIGHT") && (committedDirection != Vector2I.Left || this.segments.Count == 1)) {
 			PendingDirection = Vector2I.Right;
 		}
+		if (Moving()) {
+			return;
+		}
+		Move();
 	}
 
 	public void ClearSegments() {
@@ -54,7 +71,8 @@ public partial class Player : Node2D {
 		head = null;
 	}
 
-	public void Tick(TileMapLayer tileMap) {
+	private void Move() {
+		TileMapLayer tileMap = main.TileMap;
 		committedDirection = PendingDirection;
 		Vector2I? previousPosition = null;
 		foreach (Cell cell in this.segments) {
@@ -62,11 +80,12 @@ public partial class Player : Node2D {
 			Vector2I initialPosition = tileMap.LocalToMap(cell.Position);
 			if (previousPosition == null) {
 				// head movement
-				Vector2I targetPosition = cell.NextPosition(tileMap, committedDirection);
-				cell.SetPosition(tileMap, targetPosition);
+				cell.MovePosition(tileMap, committedDirection);
 			} else {
 				// tail movement
-				cell.SetPosition(tileMap, (Vector2I) previousPosition);
+				Vector2I position = tileMap.LocalToMap(cell.Position);
+				Vector2I direction = ((Vector2I) previousPosition) - position;
+				cell.MovePosition(tileMap, direction);
 			}
 			previousPosition = initialPosition;
 		}

@@ -10,6 +10,8 @@ public partial class Cell : Node2D {
 
     public bool HasMoved { get; set; } = false;
 
+    public bool Moving { get; set; } = false;
+
     public override void _Ready() {
         cell = GetNode<ColorRect>("CellColor");
 
@@ -23,16 +25,26 @@ public partial class Cell : Node2D {
     }
 
     public void MovePosition(TileMapLayer tileMap, Vector2I direction) {
-        SetPosition(tileMap, NextPosition(tileMap, direction));
+        if (Moving) return;
+        Moving = true;
+        Vector2 nextPosition = tileMap.MapToLocal(NextPosition(tileMap, direction));
+        Tween tween = CreateTween();
+        tween.TweenProperty(this, "position", nextPosition, 0.1);
+        tween.TweenCallback(Callable.From(MovementDone));
     }
 
-    public Vector2I NextPosition(TileMapLayer tileMap, Vector2I direction) {
+    private void MovementDone() {
+        Moving = false;
+    }
+
+    private Vector2I NextPosition(TileMapLayer tileMap, Vector2I direction) {
         return tileMap.LocalToMap(Position)  + direction;
     }
 
     public void OnCellCollision(Area2D other) {
         if (HasMoved && Player.IsAncestorOf(other)) {
-            Player.OnSelfCollision();
+            // bypass for now
+            // Player.OnSelfCollision();
         }
     }
 }

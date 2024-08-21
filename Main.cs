@@ -22,7 +22,7 @@ public partial class Main : Node2D {
 
 	private int activeFood = 0;
 
-	private int MAX_ACTIVE_FOOD_COUNT = 100;
+	private int MAX_ACTIVE_FOOD_COUNT = 1000;
 
 	public bool GameStarted { get; private set; } = false;
 

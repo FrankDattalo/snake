@@ -41,6 +41,7 @@ public partial class Player : Node2D {
 		head.Player = this;
 		//head.Color = new Color(0x0043150); // TODO refactor - magic number
 		head.Color = new Color(0xffffffff); // TODO refactor - magic number
+		head.IsHead = true;
 		head.ZIndex = 3; // TODO refactor - magic number
 		segments.Add(head);
 		this.AddChild(head);
@@ -48,6 +49,9 @@ public partial class Player : Node2D {
 	}
 
 	public override void _Process(double delta) {
+		if (!main.GameStarted) {
+			return;
+		}
 		if (Input.IsActionPressed("UP") && (committedDirection != Vector2I.Down || this.segments.Count == 1)) {
 			PendingDirection = Vector2I.Up;
 		} else if (Input.IsActionPressed("DOWN") && (committedDirection != Vector2I.Up || this.segments.Count == 1)) {
@@ -76,7 +80,6 @@ public partial class Player : Node2D {
 		committedDirection = PendingDirection;
 		Vector2I? previousPosition = null;
 		foreach (Cell cell in this.segments) {
-			cell.HasMoved = true;
 			Vector2I initialPosition = tileMap.LocalToMap(cell.Position);
 			if (previousPosition == null) {
 				// head movement

@@ -44,29 +44,9 @@ public partial class Main : Node2D {
 	}
 
 	private Vector2I RandomPosition() {
-		Vector2 position = new Vector2(
-			GD.Randf() * viewportSize.X,
-			GD.Randf() * viewportSize.Y);
-
-		Vector2I result = TileMap.LocalToMap(position);
-
-		// bound the positions by two tiles from each corner
-		// because the playable game world is slightly smaller
-		// than the view port
-		if (result.X < 2) {
-			result.X += 2;
-		}
-		if (result.Y < 2) {
-			result.Y += 2;
-		}
-		if (result.X > 78) {
-			result.X -= 2;
-		}
-		if (result.Y > 43) {
-			result.Y -= 2;
-		}
-
-		return result;
+		int x = (int) (GD.Randi() % 76u) + 2;
+		int y = (int) (GD.Randi() % 41u) + 2;
+		return new Vector2I(x, y);
 	}
 
 	private void GameOver() {

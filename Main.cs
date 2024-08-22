@@ -22,7 +22,7 @@ public partial class Main : Node2D {
 
 	private int activeFood = 0;
 
-	private int MAX_ACTIVE_FOOD_COUNT = 1000;
+	private int MAX_ACTIVE_FOOD_COUNT = 50;
 
 	public bool GameStarted { get; private set; } = false;
 
@@ -48,7 +48,25 @@ public partial class Main : Node2D {
 			GD.Randf() * viewportSize.X,
 			GD.Randf() * viewportSize.Y);
 
-		return TileMap.LocalToMap(position);
+		Vector2I result = TileMap.LocalToMap(position);
+
+		// bound the positions by two tiles from each corner
+		// because the playable game world is slightly smaller
+		// than the view port
+		if (result.X < 2) {
+			result.X += 2;
+		}
+		if (result.Y < 2) {
+			result.Y += 2;
+		}
+		if (result.X > 78) {
+			result.X -= 2;
+		}
+		if (result.Y > 43) {
+			result.Y -= 2;
+		}
+
+		return result;
 	}
 
 	private void GameOver() {

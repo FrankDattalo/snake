@@ -9,14 +9,14 @@ public partial class Player : Node2D {
 	[Export]
 	public PackedScene CellScene { get; set; }
 
-	private Vector2I PendingDirection { get; set; } = Vector2I.Right;
 	private Main main;
-	private Vector2I committedDirection = Vector2I.Zero;
+	private Vector2I committedDirection = Vector2I.Right;
 
 	private readonly List<Cell> segments = new List<Cell>();
 	private Cell head;
 	private int pendingGrowth = 0;
 
+	private readonly Queue<Vector2I> queuedInput = new Queue<Vector2I>();
 
 	public int SegmentCount {
 		get {
@@ -34,7 +34,7 @@ public partial class Player : Node2D {
 
 	public void OnGameStart(Vector2I position) {
 		Vector2I[] dirs = new Vector2I[]{ Vector2I.Left, Vector2I.Right, Vector2I.Up, Vector2I.Down };
-		PendingDirection = dirs[GD.Randi() % dirs.Length];
+		QueuePendingDirection(dirs[GD.Randi() % dirs.Length]);
 		// TODO: handle this better
 		ClearSegments();
 		head = CellScene.Instantiate<Cell>();
@@ -49,21 +49,31 @@ public partial class Player : Node2D {
 	}
 
 	public override void _Process(double delta) {
+
 		if (!main.GameStarted) {
 			return;
 		}
-		if (Input.IsActionPressed("UP") && (committedDirection != Vector2I.Down || this.segments.Count == 1)) {
-			PendingDirection = Vector2I.Up;
-		} else if (Input.IsActionPressed("DOWN") && (committedDirection != Vector2I.Up || this.segments.Count == 1)) {
-			PendingDirection = Vector2I.Down;
-		} else if (Input.IsActionPressed("LEFT") && (committedDirection != Vector2I.Right || this.segments.Count == 1)) {
-			PendingDirection = Vector2I.Left;
-		} else if (Input.IsActionPressed("RIGHT") && (committedDirection != Vector2I.Left || this.segments.Count == 1)) {
-			PendingDirection = Vector2I.Right;
+
+		if (Input.IsActionJustPressed("UP")) {
+			QueuePendingDirection(Vector2I.Up);
 		}
+
+		if (Input.IsActionJustPressed("DOWN")) {
+			QueuePendingDirection(Vector2I.Down);
+		}
+
+		if (Input.IsActionJustPressed("LEFT")) {
+			QueuePendingDirection(Vector2I.Left);
+		}
+
+		if (Input.IsActionJustPressed("RIGHT")) {
+			QueuePendingDirection(Vector2I.Right);
+		}
+
 		if (Moving()) {
 			return;
 		}
+
 		Move();
 	}
 
@@ -77,7 +87,7 @@ public partial class Player : Node2D {
 
 	private void Move() {
 		TileMapLayer tileMap = main.TileMap;
-		committedDirection = PendingDirection;
+		committedDirection = TakePendingDirection();
 		Vector2I? previousPosition = null;
 		foreach (Cell cell in this.segments) {
 			Vector2I initialPosition = tileMap.LocalToMap(cell.Position);
@@ -112,4 +122,24 @@ public partial class Player : Node2D {
 
 	[Signal]
 	public delegate void OnPlayerDiedEventHandler();
+
+	private void QueuePendingDirection(Vector2I dir) {
+		queuedInput.Enqueue(dir);
+	}
+
+	private Vector2I TakePendingDirection() {
+		if (queuedInput.Count == 0) {
+			return committedDirection;
+		}
+		Vector2I desiredDirection = queuedInput.Dequeue();
+		bool moveValid = segments.Count == 1 ||
+			(desiredDirection == Vector2I.Left && committedDirection != Vector2I.Right) ||
+			(desiredDirection == Vector2I.Right && committedDirection != Vector2I.Left) ||
+			(desiredDirection == Vector2I.Up && committedDirection != Vector2I.Down) ||
+			(desiredDirection == Vector2I.Down && committedDirection != Vector2I.Up);
+		if (!moveValid) {
+			return committedDirection;
+		}
+		return desiredDirection;
+	}
 }
